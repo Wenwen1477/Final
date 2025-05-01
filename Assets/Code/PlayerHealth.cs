@@ -1,17 +1,11 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using TMPro;
-using System.Collections;
 
 public class PlayerHealth : MonoBehaviour
 {
-    public int maxHealth = 9;
+    public int maxHealth = 3;
     public int currentHealth;
     public TextMeshProUGUI hpText;
-
-    public Sprite normalSprite;
-    public Sprite hurtSprite;
-    public float hurtDuration = 0.3f;
 
     private SpriteRenderer spriteRenderer;
 
@@ -20,7 +14,6 @@ public class PlayerHealth : MonoBehaviour
         currentHealth = maxHealth;
         UpdateHPText();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        spriteRenderer.sprite = normalSprite;
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -31,24 +24,29 @@ public class PlayerHealth : MonoBehaviour
             Destroy(collision.gameObject);
             UpdateHPText();
 
-            StartCoroutine(FlashHurtSprite());
+            StartCoroutine(FlashDamage());
 
             if (currentHealth <= 0)
             {
-                SceneManager.LoadScene("GameOver");
+                GameManager.instance.GameOver(); // เรียก GameOver ผ่าน GameManager
             }
         }
     }
 
     void UpdateHPText()
     {
-        hpText.text = "HP: " + currentHealth.ToString();
+        if (hpText != null)
+            hpText.text = "HP: " + currentHealth.ToString();
     }
 
-    IEnumerator FlashHurtSprite()
+    System.Collections.IEnumerator FlashDamage()
     {
-        spriteRenderer.sprite = hurtSprite;
-        yield return new WaitForSeconds(hurtDuration);
-        spriteRenderer.sprite = normalSprite;
+        for (int i = 0; i < 3; i++)
+        {
+            spriteRenderer.color = new Color(1f, 1f, 1f, 0.3f); // จาง
+            yield return new WaitForSeconds(0.1f);
+            spriteRenderer.color = new Color(1f, 1f, 1f, 1f); // กลับมา
+            yield return new WaitForSeconds(0.1f);
+        }
     }
 }
