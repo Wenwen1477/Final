@@ -13,11 +13,11 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        moveInput = Input.GetAxisRaw("Horizontal"); // ซ้าย/ขวา จากปุ่ม A-D หรือ ← →
+        moveInput = Input.GetAxisRaw("Horizontal"); //ให้ขยับซ้ายขาว
     }
 
     void FixedUpdate()
     {
-        rb.velocity = new Vector2(moveInput * moveSpeed, 0f); // ขยับแค่แกน X เท่านั้น
+        rb.velocity = new Vector2(moveInput * moveSpeed, 0f); // ขยับแค่แกนX
     }
 }

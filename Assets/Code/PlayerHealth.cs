@@ -1,17 +1,26 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro; // สำหรับใช้กับ TextMeshPro
+using TMPro;
+using System.Collections;
 
 public class PlayerHealth : MonoBehaviour
 {
     public int maxHealth = 3;
     public int currentHealth;
-    public TextMeshProUGUI hpText; // ลิงก์กับ UI Text
+    public TextMeshProUGUI hpText;
+
+    public Sprite normalSprite;
+    public Sprite hurtSprite;
+    public float hurtDuration = 0.3f;
+
+    private SpriteRenderer spriteRenderer;
 
     void Start()
     {
         currentHealth = maxHealth;
-        UpdateHPText(); // อัปเดตครั้งแรก
+        UpdateHPText();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer.sprite = normalSprite;
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -22,7 +31,7 @@ public class PlayerHealth : MonoBehaviour
             Destroy(collision.gameObject);
             UpdateHPText();
 
-            Debug.Log("โดนกระแทก! เหลือ HP: " + currentHealth);
+            StartCoroutine(FlashHurtSprite());
 
             if (currentHealth <= 0)
             {
@@ -34,5 +43,12 @@ public class PlayerHealth : MonoBehaviour
     void UpdateHPText()
     {
         hpText.text = "HP: " + currentHealth.ToString();
+    }
+
+    IEnumerator FlashHurtSprite()
+    {
+        spriteRenderer.sprite = hurtSprite;
+        yield return new WaitForSeconds(hurtDuration);
+        spriteRenderer.sprite = normalSprite;
     }
 }
