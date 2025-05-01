@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using System.Collections;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -7,13 +8,19 @@ public class PlayerHealth : MonoBehaviour
     public int currentHealth;
     public TextMeshProUGUI hpText;
 
+    public Sprite normalSprite;  // รูปปกติ
+    public Sprite hurtSprite;    // รูปตอนโดนตี
+    public float hurtEffectTime = 0.3f;
+
     private SpriteRenderer spriteRenderer;
 
     void Start()
     {
         currentHealth = maxHealth;
         UpdateHPText();
+
         spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer.sprite = normalSprite; // เริ่มต้นใช้หน้าปกติ
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -24,11 +31,11 @@ public class PlayerHealth : MonoBehaviour
             Destroy(collision.gameObject);
             UpdateHPText();
 
-            StartCoroutine(FlashDamage());
+            StartCoroutine(FlashHurtEffect());
 
             if (currentHealth <= 0)
             {
-                GameManager.instance.GameOver(); // เรียก GameOver ผ่าน GameManager
+                GameManager.instance.GameOver(); // ไปหน้า GameOver
             }
         }
     }
@@ -36,17 +43,23 @@ public class PlayerHealth : MonoBehaviour
     void UpdateHPText()
     {
         if (hpText != null)
+        {
             hpText.text = "HP: " + currentHealth.ToString();
+        }
     }
 
-    System.Collections.IEnumerator FlashDamage()
+    IEnumerator FlashHurtEffect()
     {
+        spriteRenderer.sprite = hurtSprite;
+
         for (int i = 0; i < 3; i++)
         {
-            spriteRenderer.color = new Color(1f, 1f, 1f, 0.3f); // จาง
+            spriteRenderer.color = new Color(1, 1, 1, 0.3f); // จางลง
             yield return new WaitForSeconds(0.1f);
-            spriteRenderer.color = new Color(1f, 1f, 1f, 1f); // กลับมา
+            spriteRenderer.color = new Color(1, 1, 1, 1f);   // กลับมา
             yield return new WaitForSeconds(0.1f);
         }
+
+        spriteRenderer.sprite = normalSprite; // กลับหน้าเดิม
     }
 }
