@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager instance; // <== สำคัญ!
+    public static GameManager instance;
 
     public int score = 0;
     public TextMeshProUGUI scoreText;
@@ -17,9 +17,14 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         if (instance == null)
+        {
             instance = this;
+            DontDestroyOnLoad(gameObject); // สำคัญ!
+        }
         else
-            Destroy(gameObject); // ป้องกันซ้ำถ้าเปลี่ยน scene
+        {
+            Destroy(gameObject);
+        }
     }
 
     void Start()
@@ -32,7 +37,9 @@ public class GameManager : MonoBehaviour
         if (gameEnded) return;
 
         gameTime -= Time.deltaTime;
-        timerText.text = "Time: " + Mathf.CeilToInt(gameTime).ToString();
+
+        if (timerText != null)
+            timerText.text = "Time: " + Mathf.CeilToInt(gameTime).ToString();
 
         if (gameTime <= 0)
         {
@@ -50,7 +57,8 @@ public class GameManager : MonoBehaviour
 
     void UpdateScoreText()
     {
-        scoreText.text = "Score: " + score.ToString();
+        if (scoreText != null)
+            scoreText.text = "Score: " + score.ToString();
     }
 
     public void WinGame()
@@ -63,5 +71,12 @@ public class GameManager : MonoBehaviour
     {
         gameEnded = true;
         SceneManager.LoadScene("GameOver");
+    }
+
+    public void ResetGame()
+    {
+        score = 0;
+        gameTime = 60f;
+        gameEnded = false;
     }
 }
